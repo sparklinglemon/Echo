@@ -15,7 +15,7 @@ Echo is a free and open source way to listen to music with your friends in real 
 
 ### Installation
 ```bash
-git clone https://github.com/your-username/echo.git
+git clone https://github.com/sparklinglemon/echo.git
 cd echo
 npm install
 ```
