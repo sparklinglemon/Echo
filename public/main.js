@@ -50,7 +50,7 @@ document.body.innerHTML = `
 
   <!-- SEARCH -->
   <div style="flex:1;padding:20px;border-left:1px solid #333;display:flex;flex-direction:column">
-    <input id="search" placeholder="Search music" style="padding:8px"/>
+    <input id="search" placeholder="Search song, YouTube link, or video ID" style="padding:8px"/>
     <button id="go" style="margin-top:6px">Search</button>
 
     <div id="results"
