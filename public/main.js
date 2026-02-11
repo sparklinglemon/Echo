@@ -62,7 +62,8 @@ document.body.innerHTML = `
 `;
 
 //dom
-const ws = new WebSocket(`ws://${location.host}`);
+const wsProtocol = location.protocol === "https:" ? "wss" : "ws";
+const ws = new WebSocket(`${wsProtocol}://${location.host}`);
 const queueEl = document.getElementById("queue");
 const resultsEl = document.getElementById("results");
 const seek = document.getElementById("seek");
