@@ -6,6 +6,7 @@ const { Innertube } = require("youtubei.js");
 
 const PORT = 3000;
 const PUBLIC_DIR = path.join(__dirname, "public");
+const FORCE_HTTPS = process.env.FORCE_HTTPS === "true";
 
 //yt init
 let yt;
@@ -42,7 +43,48 @@ function extractVideoId(input) {
   return null;
 }
 
+function isRequestSecure(req) {
+  if (req.socket?.encrypted) return true;
+
+  const forwardedProto = req.headers["x-forwarded-proto"];
+  if (typeof forwardedProto === "string") {
+    return forwardedProto.split(",")[0].trim() === "https";
+  }
+
+  const cfVisitor = req.headers["cf-visitor"];
+  if (typeof cfVisitor === "string") {
+    try {
+      const parsed = JSON.parse(cfVisitor);
+      return parsed?.scheme === "https";
+    } catch {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+function redirectToHttps(req, res) {
+  const host = req.headers.host;
+  if (!host) {
+    res.writeHead(400);
+    res.end("Missing Host header");
+    return;
+  }
+
+  res.writeHead(301, { Location: `https://${host}${req.url}` });
+  res.end();
+}
+
 const server = http.createServer(async (req, res) => {
+  if (FORCE_HTTPS && !isRequestSecure(req)) {
+    return redirectToHttps(req, res);
+  }
+
+  if (isRequestSecure(req)) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+
   if (req.url.startsWith("/search")) {
     res.setHeader("Content-Type", "application/json");
 
